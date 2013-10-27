@@ -39,7 +39,7 @@ if exist %MSVCDIR% (
 	goto setup_env
 ) 
 
-REM Check if Visual Studio 6 is installed
+REM Check if Visual C++ 6 is installed
 set MSVCDIR="%PROGFILES%\Microsoft Visual Studio\VC98"
 if exist %MSVCDIR% (
 	set COMPILER_VER="6"
@@ -87,8 +87,14 @@ echo Downloading latest fltk...
 
 REM Extract downloaded zip file to tmp_libfltk
 %SEVEN_ZIP% x fltk.tar.gz -y | FIND /V "Igor Pavlov"
+
+:set_compiler
+
+cd %ROOT_DIR%
+%RM% -rf tmp_libfltk
 %SEVEN_ZIP% x fltk.tar -y -otmp_libfltk | FIND /V "ing  " | FIND /V "Igor Pavlov"
 
+REM set compiler
 if %COMPILER_VER% == "6" goto vc6
 if %COMPILER_VER% == "2005" goto vc2005
 if %COMPILER_VER% == "2008" goto vc2008
@@ -97,24 +103,73 @@ if %COMPILER_VER% == "2012" goto vc2012
 if %COMPILER_VER% == "2013" goto vc2013
 
 :vc2008
-REM Upgrade libcurl project file to compatible installed Visual Studio version
-cd tmp_libfltk\fltk*\ide\VisualC2008
+:vc2010
+if %COMPILER_VER% == "2008" (
+	cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
+)
 
-REM Build!
-msbuild fltk.sln /t:demo /p:Configuration=Release
-goto copy_files
+if %COMPILER_VER% == "2010" (
+	cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
+)
 
-:copy_files
+REM Build Release!
+if NOT "%RELEASE_IS_OK%" == "1" (
+	msbuild fltk.sln /t:demo /p:Configuration=Release
+	set RELEASE_IS_OK=1
+	goto copy_release_files
+)
 
+REM Build Debug!
+if NOT "%DEBUG_IS_OK%" == "1" (
+	msbuild fltk.sln /t:demo /p:Configuration=Debug
+	set DEBUG_IS_OK=1
+	goto copy_debug_files
+)
+goto cleanup
+
+:copy_release_files
 REM Copy compiled .*lib files in lib folder to third-party folder
 cd %ROOT_DIR%\tmp_libfltk\fltk*
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\lib-release
 %CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\lib-release
 %RM% %ROOT_DIR%\third-party\libfltk\lib\lib-release\README.lib
 
+REM Copy compiled dll files in test folder to third-party folder
+%MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\dll-release
+%CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\dll-release
+%CP% test\fltkdll.lib %ROOT_DIR%\third-party\libfltk\lib\dll-release
+%CP% test\fltkdll.dll %ROOT_DIR%\third-party\libfltk\lib\dll-release
+%RM% %ROOT_DIR%\third-party\libfltk\lib\dll-release\README.lib
+%RM% %ROOT_DIR%\third-party\libfltk\lib\dll-release\fltk.lib
+
+if "%BIN_IS_OK%" == "1" goto set_compiler
 REM Copy compiled fluid.exe files in lib folder to third-party folder
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\bin
 %CP% fluid\fluid.exe %ROOT_DIR%\third-party\libfltk\bin
+
+REM Copy FL folder to third-party folder
+%MKDIR% -p %ROOT_DIR%\third-party\libfltk\include
+%CP% -rf FL %ROOT_DIR%\third-party\libfltk\include
+set BIN_IS_OK=1
+goto set_compiler
+
+:copy_debug_files
+REM Copy compiled .*lib files in lib folder to third-party folder
+cd %ROOT_DIR%\tmp_libfltk\fltk*
+%MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\lib-debug
+%CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\lib-debug
+%RM% %ROOT_DIR%\third-party\libfltk\lib\lib-debug\README.lib
+
+REM Copy compiled dll files in test folder to third-party folder
+%MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\dll-debug
+%CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\dll-debug
+%CP% test\fltkdlld.lib %ROOT_DIR%\third-party\libfltk\lib\dll-debug
+%CP% test\fltkdlld.dll %ROOT_DIR%\third-party\libfltk\lib\dll-debug
+%RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\README.lib
+%RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\fltkd.lib
+goto set_compiler
+
+:cleanup
 
 :end
 exit /b
