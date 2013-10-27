@@ -103,15 +103,20 @@ if %COMPILER_VER% == "2012" goto vc2012
 if %COMPILER_VER% == "2013" goto vc2013
 
 :vc2008
+cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
+goto build_using_msbuild
+
 :vc2010
-if %COMPILER_VER% == "2008" (
-	cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
-)
+cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
+goto build_using_msbuild
 
-if %COMPILER_VER% == "2010" (
-	cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
-)
+:vc2012
+:vc2013
+cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
+devenv /upgrade fltk.sln
+goto build_using_msbuild
 
+:build_using_msbuild
 REM Build Release!
 if NOT "%RELEASE_IS_OK%" == "1" (
 	msbuild fltk.sln /t:demo /p:Configuration=Release
