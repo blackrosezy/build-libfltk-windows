@@ -67,6 +67,7 @@ set RM="%CD%\bin\unxutils\rm.exe"
 set CP="%CD%\bin\unxutils\cp.exe"
 set MKDIR="%CD%\bin\unxutils\mkdir.exe"
 set SEVEN_ZIP="%CD%\bin\7-zip\7za.exe"
+set SED="%CD%\bin\unxutils\sed.exe"
 set WGET="%CD%\bin\unxutils\wget.exe"
 set XIDEL="%CD%\bin\xidel\xidel.exe"
 set VSPC="%CD%\bin\vspc\vspc.exe"
@@ -105,20 +106,28 @@ if %COMPILER_VER% == "2013" goto vc2013
 
 :vc2005
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
+%SED% -i "s|ProgramDataBaseFileName=\".*\"|ProgramDataBaseFileName=\"$(TargetDir)$(TargetName).pdb\"|g" fltk.lib.vcproj
+%SED% -i "s|ProgramDataBaseFileName=\".*\"|ProgramDataBaseFileName=\"$(TargetDir)$(TargetName).pdb\"|g" fltkdll.vcproj
 %VSPC% VS2008 VS2005 fltk.sln
 goto build_using_devenv
 
 :vc2008
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
+%SED% -i "s|ProgramDataBaseFileName=\".*\"|ProgramDataBaseFileName=\"$(TargetDir)$(TargetName).pdb\"|g" fltk.lib.vcproj
+%SED% -i "s|ProgramDataBaseFileName=\".*\"|ProgramDataBaseFileName=\"$(TargetDir)$(TargetName).pdb\"|g" fltkdll.vcproj
 goto build_using_msbuild
 
 :vc2010
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
+%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltk.lib.vcxproj
+%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltkdll.vcxproj
 goto build_using_msbuild
 
 :vc2012
 :vc2013
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
+%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltk.lib.vcxproj
+%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltkdll.vcxproj
 devenv /upgrade fltk.sln
 goto build_using_msbuild
 
@@ -189,11 +198,13 @@ REM Copy compiled .*lib files in lib folder to third-party folder
 cd %ROOT_DIR%\tmp_libfltk\fltk*
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\lib-debug
 %CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\lib-debug
+%CP% lib\*.pdb %ROOT_DIR%\third-party\libfltk\lib\lib-debug
 %RM% %ROOT_DIR%\third-party\libfltk\lib\lib-debug\README.lib
 
 REM Copy compiled dll files in test folder to third-party folder
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\dll-debug
+%CP% lib\*.pdb %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %CP% test\fltkdlld.lib %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %CP% test\fltkdlld.dll %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\README.lib
