@@ -204,7 +204,6 @@ cd %ROOT_DIR%\tmp_libfltk\fltk*
 REM Copy compiled dll files in test folder to third-party folder
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %CP% lib\*.lib %ROOT_DIR%\third-party\libfltk\lib\dll-debug
-%CP% lib\*.pdb %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %CP% test\fltkdlld.lib %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %CP% test\fltkdlld.dll %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\README.lib
