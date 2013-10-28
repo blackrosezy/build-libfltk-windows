@@ -123,6 +123,7 @@ devenv /upgrade fltk.sln
 goto build_using_msbuild
 
 :build_using_devenv
+
 REM Build Release!
 if NOT "%RELEASE_IS_OK%" == "1" (
 	devenv fltk.sln /Rebuild "Release|Win32" /Project "demo"
@@ -139,6 +140,7 @@ if NOT "%DEBUG_IS_OK%" == "1" (
 goto cleanup
 
 :build_using_msbuild
+
 REM Build Release!
 if NOT "%RELEASE_IS_OK%" == "1" (
 	msbuild fltk.sln /t:demo /p:Configuration=Release
@@ -155,6 +157,7 @@ if NOT "%DEBUG_IS_OK%" == "1" (
 goto cleanup
 
 :copy_release_files
+
 REM Copy compiled .*lib files in lib folder to third-party folder
 cd %ROOT_DIR%\tmp_libfltk\fltk*
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\lib-release
@@ -181,6 +184,7 @@ set BIN_IS_OK=1
 goto set_compiler
 
 :copy_debug_files
+
 REM Copy compiled .*lib files in lib folder to third-party folder
 cd %ROOT_DIR%\tmp_libfltk\fltk*
 %MKDIR% -p %ROOT_DIR%\third-party\libfltk\lib\lib-debug
@@ -196,6 +200,11 @@ REM Copy compiled dll files in test folder to third-party folder
 %RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\fltkd.lib
 
 :cleanup
+
+REM Cleanup temporary file/folders
+cd %ROOT_DIR%
+%RM% -rf tmp_*
+%RM% fltk.tar.gz
 
 :end
 exit /b
