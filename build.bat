@@ -69,6 +69,7 @@ set MKDIR="%CD%\bin\unxutils\mkdir.exe"
 set SEVEN_ZIP="%CD%\bin\7-zip\7za.exe"
 set WGET="%CD%\bin\unxutils\wget.exe"
 set XIDEL="%CD%\bin\xidel\xidel.exe"
+set VSPC="%CD%\bin\vspc\vspc.exe"
 
 REM Housekeeping
 %RM% -rf tmp_*
@@ -102,6 +103,11 @@ if %COMPILER_VER% == "2010" goto vc2010
 if %COMPILER_VER% == "2012" goto vc2012
 if %COMPILER_VER% == "2013" goto vc2013
 
+:vc2005
+cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
+%VSPC% VS2008 VS2005 fltk.sln
+goto build_using_devenv
+
 :vc2008
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2008
 goto build_using_msbuild
@@ -115,6 +121,22 @@ goto build_using_msbuild
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
 devenv /upgrade fltk.sln
 goto build_using_msbuild
+
+:build_using_devenv
+REM Build Release!
+if NOT "%RELEASE_IS_OK%" == "1" (
+	devenv fltk.sln /Rebuild "Release|Win32" /Project "demo"
+	set RELEASE_IS_OK=1
+	goto copy_release_files
+)
+
+REM Build Debug!
+if NOT "%DEBUG_IS_OK%" == "1" (
+	devenv fltk.sln /Rebuild "Debug|Win32" /Project "demo"
+	set DEBUG_IS_OK=1
+	goto copy_debug_files
+)
+goto cleanup
 
 :build_using_msbuild
 REM Build Release!
@@ -172,7 +194,6 @@ REM Copy compiled dll files in test folder to third-party folder
 %CP% test\fltkdlld.dll %ROOT_DIR%\third-party\libfltk\lib\dll-debug
 %RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\README.lib
 %RM% %ROOT_DIR%\third-party\libfltk\lib\dll-debug\fltkd.lib
-goto set_compiler
 
 :cleanup
 
