@@ -119,16 +119,27 @@ goto build_using_msbuild
 
 :vc2010
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
-%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltk.lib.vcxproj
-%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltkdll.vcxproj
+
+%SED% -i "/<ProgramDataBaseFileName>.*<\/ProgramDataBaseFileName>/d" fltk.lib.vcxproj
+%SED% -i "s|<CompileAs>Default</CompileAs>|<CompileAs>Default</CompileAs><ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltk.lib.vcxproj
+
+%SED% -i "/<ProgramDataBaseFileName>.*<\/ProgramDataBaseFileName>/d" fltkdll.vcxproj
+%SED% -i "s|<CompileAs>Default</CompileAs>|<CompileAs>Default</CompileAs><ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltkdll.vcxproj
+
 goto build_using_msbuild
 
 :vc2012
 :vc2013
 cd %ROOT_DIR%\tmp_libfltk\fltk*\ide\VisualC2010
-%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltk.lib.vcxproj
-%SED% -i "s|<ProgramDataBaseFileName>.*</ProgramDataBaseFileName>|<ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltkdll.vcxproj
+
+%SED% -i "/<ProgramDataBaseFileName>.*<\/ProgramDataBaseFileName>/d" fltk.lib.vcxproj
+%SED% -i "s|<CompileAs>Default</CompileAs>|<CompileAs>Default</CompileAs><ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltk.lib.vcxproj
+
+%SED% -i "/<ProgramDataBaseFileName>.*<\/ProgramDataBaseFileName>/d" fltkdll.vcxproj
+%SED% -i "s|<CompileAs>Default</CompileAs>|<CompileAs>Default</CompileAs><ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>|g" fltkdll.vcxproj
+
 devenv /upgrade fltk.sln
+
 goto build_using_msbuild
 
 :build_using_devenv
