@@ -49,6 +49,7 @@ Output :
 
 **static linking**
 *  fltkd.lib
+*  fltkd.pdb
 *  fltkformsd.lib
 *  fltkgld.lib
 *  fltkimagesd.lib
